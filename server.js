@@ -1,4 +1,3 @@
-require("dotenv").config();
 const express = require("express");
 const jwtAuth = require("./lib");
 const { User } = require("./models");
@@ -8,13 +7,12 @@ const { verifyToken, getToken, refreshToken } = jwtAuth({
         identifier: "id",
         payloadFields: ["username", "firstName", "lastName"],
         getUser: async (username, password) => {
-            // const user = await User.findOne({
-            //     where: {
-            //         username, password
-            //     }
-            // });
-            // return user;
-            return { username };
+            const user = await User.findOne({
+                where: {
+                    username, password
+                }
+            });
+            return user;
         },
         getUserByIdentifier: async (id) => {
             const user = await User.findByPk(id);
@@ -26,8 +24,6 @@ const { verifyToken, getToken, refreshToken } = jwtAuth({
         // }
     }
 });
-
-const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -45,6 +41,4 @@ app.get("/protected", verifyToken, (req, res) => {
     res.send("This is protected by express-jwt-auth");
 })
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`);
-})
+module.exports = app;
