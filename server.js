@@ -8,12 +8,13 @@ const { verifyToken, getToken, refreshToken } = jwtAuth({
         identifier: "id",
         payloadFields: ["username", "firstName", "lastName"],
         getUser: async (username, password) => {
-            const user = await User.findOne({
-                where: {
-                    username, password
-                }
-            });
-            return user;
+            // const user = await User.findOne({
+            //     where: {
+            //         username, password
+            //     }
+            // });
+            // return user;
+            return { username };
         },
         getUserByIdentifier: async (id) => {
             const user = await User.findByPk(id);
