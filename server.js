@@ -3,15 +3,10 @@ const express = require("express");
 const jwtAuth = require("./lib");
 const { User } = require("./models");
 
-const { VerifyToken, getToken, refreshToken } = jwtAuth({
-    algorithm: "HS256",
-    signingKey: "something",
-    refreshTokenLifetime: "1209600s",
-    accessTokenLifetime: "300s",
-    rotateRefresh: true,
+const { verifyToken, getToken, refreshToken } = jwtAuth({
     userStrategy: {
         identifier: "id",
-        payload: ["username", "firstName", "lastName"],
+        payloadFields: ["username", "firstName", "lastName"],
         getUser: async (username, password) => {
             const user = await User.findOne({
                 where: {
@@ -23,7 +18,11 @@ const { VerifyToken, getToken, refreshToken } = jwtAuth({
         getUserByIdentifier: async (id) => {
             const user = await User.findByPk(id);
             return user;
-        }
+        },
+        // responseExtras: async function(id) {
+        //     const user = await this.getUserByIdentifier(id);
+        //     return { email: user.email };
+        // }
     }
 });
 
@@ -41,7 +40,7 @@ app.get("/not-protected", (req, res) => {
     res.send("This is not protected by express-jwt-auth");
 })
 
-app.get("/protected", VerifyToken, (req, res) => {
+app.get("/protected", verifyToken, (req, res) => {
     res.send("This is protected by express-jwt-auth");
 })
 
